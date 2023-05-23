@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copy Paste HTML</title>
+</head>
+
+
+<style>
+  #paste,
+  #htmlDiv {
+    max-height: 50vh;
+    overflow: scroll;
+  }
+</style>
+
+<body>
+  <button onclick="pasteHTML()">Paste</button>
+  <button onclick="copyAsHTML()">Copy as HTML</button>
+  <button onclick="copyText()">Copy as plaiin text</button>
+
+  <h4>HTML as TEXT</h4>
+  <div id="paste" contenteditable="true"></div>
+  <hr>
+  <h4>HTML rendered</h4>
+  <div id="htmlDiv"></div>
+</body>
+
+</html>
+<script>
+  const paster = document.querySelector('#paste')
+  const htmlPaster = document.querySelector('#htmlDiv')
+
+  const copyText = async () => {
+    const text = paster.textContent
+    await navigator.clipboard.writeText(text)
+
+  }
+  const copyAsHTML = async () => {
+    const text = paster.textContent
+    const type = "text/html";
+    const blob = new Blob([text], { type });
+    const data = [new ClipboardItem({ [type]: blob })];
+    await navigator.clipboard.write(data)
+  }
+
+  const getHTMLAsString = async () => {
+    for (const item of await navigator.clipboard.read()) {
+      if (item.types.includes("text/html")) {
+        return (await item.getType('text/html')).text()
+      }
+    }
+  }
+  const pasteHTML = async () => {
+    console.log('JAYESH')
+    const permission = await navigator.permissions.query({
+      name: "clipboard-read",
+    });
+    if (permission.state === "denied") {
+      throw new Error("Not allowed to read clipboard.");
+    }
+
+    const html = await getHTMLAsString()
+
+    paster.textContent = html
+    htmlPaster.innerHTML = html
+  }
+</script>
