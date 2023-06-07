@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON TO JSX</title>
+</head>
+
+<body>
+    <h2>INPUT</h2>
+    <div style="border: 1px solid black" id="input" contenteditable="true"></div>
+    <h2>OUTPUT</h2>
+    <div style="border: 1px solid black" id="output" contenteditable="true"></div>
+    <br>
+    <button onclick="jsonToJsx()">Get JSX</button>
+    <button onclick="copyJSX()">Copy JSX</button>
+</body>
+<script src="https://unpkg.com/prettier@2.8.8/standalone.js"></script>
+<script src="https://unpkg.com/prettier@2.8.8/parser-html.js"></script>
+<script>
+    const input = document.getElementById('input')
+    const output = document.getElementById('output')
+    console.log(prettier)
+    const visitor = (node, childrenText) => {
+        if (node.text) {
+            return node.text
+        }
+        return `<${node.type}>${childrenText}</${node.type}>`
+    }
+
+    const travellor = (json) => {
+        debugger
+        if (!json.children) return visitor(json)
+        const childrenText = Array.from(json.children).map(child => travellor(child)).join('')
+        return visitor(json, childrenText)
+    }
+
+    const jsonToJsx = () => {
+        const json = JSON.parse(input.innerText)
+        if (Array.isArray(json)) {
+            return output.innerText = prettier.format(travellor(json[0]), {
+                parser: 'html', plugins: prettierPlugins,
+            })
+        }
+        output.innerText = prettier.format(travellor(json))
+    }
+    const copyJSX = () => {
+        navigator.clipboard.writeText(output.innerText)
+    }
+</script>
+
+</html>
