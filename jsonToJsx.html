@@ -24,7 +24,7 @@
     const output = document.getElementById('output')
     console.log(prettier)
     const visitor = (node, childrenText) => {
-        if (node.text) {
+        if (node.text !== undefined) {
             return node.text
         }
         return `<${node.type}>${childrenText}</${node.type}>`
