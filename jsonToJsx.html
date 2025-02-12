@@ -25,13 +25,22 @@
     console.log(prettier)
     const visitor = (node, childrenText) => {
         if (node.text !== undefined) {
-            return node.text
+            return textVisitor(node)
         }
         return `<${node.type}>${childrenText}</${node.type}>`
     }
 
+    const textVisitor = (node) => {
+        const marks = Object.keys(node).filter(key => key !== 'text')
+
+        let t = node.text
+        marks.forEach(mark => {
+            t = `<mark ${mark}>${t} </mark>`
+        })
+        return t
+    }
+
     const travellor = (json) => {
-        debugger
         if (!json.children) return visitor(json)
         const childrenText = Array.from(json.children).map(child => travellor(child)).join('')
         return visitor(json, childrenText)
@@ -40,11 +49,11 @@
     const jsonToJsx = () => {
         const json = JSON.parse(input.innerText)
         if (Array.isArray(json)) {
-            return output.innerText = prettier.format(travellor(json[0]), {
+            return output.innerText = (travellor(json[0]), {
                 parser: 'html', plugins: prettierPlugins,
             })
         }
-        output.innerText = prettier.format(travellor(json))
+        output.innerText = (travellor(json))
     }
     const copyJSX = () => {
         navigator.clipboard.writeText(output.innerText)
