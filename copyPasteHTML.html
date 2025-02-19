@@ -19,6 +19,7 @@
 
 <body>
   <button onclick="pasteHTML()">Paste</button>
+  <button onclick="copyJSONFromHTMLFragment()">COPY JSON from HTML Fragment</button>
   <button onclick="copyAsHTML()">Copy as HTML</button>
   <button onclick="copyText()">Copy as plaiin text</button>
 
@@ -66,5 +67,12 @@
 
     paster.textContent = html
     htmlPaster.innerHTML = html
+  }
+  const copyJSONFromHTMLFragment = async () => {
+    const html = htmlPaster.innerHTML
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(html, 'text/html')
+    const json = decodeURIComponent(atob(doc.querySelector('[data-slate-fragment]').getAttribute('data-slate-fragment')))
+    await navigator.clipboard.writeText(json)
   }
 </script>
